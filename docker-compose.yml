@@ -59,8 +59,8 @@ services:
       - "5433:5432"
     environment:
       POSTGRES_DB: market_data
-      POSTGRES_USER: stockpulse
-      POSTGRES_PASSWORD: stockpulse_dev
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_market_data:/var/lib/postgresql/data
     healthcheck:
@@ -76,8 +76,8 @@ services:
       - "5434:5432"
     environment:
       POSTGRES_DB: portfolio
-      POSTGRES_USER: stockpulse
-      POSTGRES_PASSWORD: stockpulse_dev
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_portfolio_data:/var/lib/postgresql/data
     healthcheck:
@@ -93,8 +93,8 @@ services:
       - "5435:5432"
     environment:
       POSTGRES_DB: alerts
-      POSTGRES_USER: stockpulse
-      POSTGRES_PASSWORD: stockpulse_dev
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_alert_data:/var/lib/postgresql/data
     healthcheck:
@@ -102,6 +102,27 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  # ===== SERVICES =====
+  market-data-service:
+    build:
+      context: .
+      dockerfile: services/market-data-service/Dockerfile
+    container_name: stockpulse-market-data
+    ports:
+      - "8081:8081"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres-market:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-market:5432/market_data
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      ALPHA_VANTAGE_API_KEY: ${ALPHA_VANTAGE_API_KEY}
+      JAVA_OPTS: "-Xms256m -Xmx512m -XX:+UseContainerSupport"
 
 volumes:
   postgres_market_data:
