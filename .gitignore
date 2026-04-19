@@ -1,17 +1,37 @@
+# ===== Java / Maven =====
 target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-# https://maven.apache.org/wrapper/#usage-without-binary-jar
-.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-# Eclipse m2e generated files
-# Eclipse Core
-.project
-# JDT-specific (Eclipse Java Development Tools)
-.classpath
+# ===== Spring Boot =====
+application-local.yml
+application-local.properties
+
+# ===== IntelliJ =====
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ===== VSCode =====
+.vscode/
+!.vscode/extensions.json
+
+# ===== Angular =====
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+
+# ===== Secrets =====
+*.env
+.env.local
+secrets/
+**/src/main/resources/application-prod.yml
