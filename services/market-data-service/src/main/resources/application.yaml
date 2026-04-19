@@ -53,7 +53,7 @@ management:
 # Configuration spécifique à l'application
 app:
   alpha-vantage:
-    api-key: WSO1VE8B2X5BOZHH  # variable d'env, fallback "demo"
+    api-key: ${ALPHA_VANTAGE_API_KEY}  # variable d'env, fallback "demo"
     base-url: https://www.alphavantage.co
   kafka:
     topics:
@@ -61,4 +61,4 @@ app:
   scheduling:
     stock-fetch-cron: "0 * * * * *"  # toutes les minutes
   stocks:
-    symbols: IBM
+    symbols: IBM,AAPL,MSFT,JPM,GS
