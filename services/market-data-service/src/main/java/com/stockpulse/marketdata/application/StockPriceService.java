@@ -78,15 +78,13 @@ public class StockPriceService {
     }
 
     private void save(StockPriceDto dto) {
-        StockPrice entity = new StockPrice(
-                null,
-                dto.symbol(),
-                dto.price(),
-                dto.volume(),
-                dto.changePct(),
-                dto.fetchedAt(),
-                dto.source()
-        );
+        StockPrice entity = new StockPrice();
+        entity.setSymbol(dto.symbol());
+        entity.setPrice(dto.price());
+        entity.setVolume(dto.volume());
+        entity.setChangePct(dto.changePct());
+        entity.setFetchedAt(dto.fetchedAt());
+        entity.setSource(dto.source());
         repository.save(entity);
     }
 }
