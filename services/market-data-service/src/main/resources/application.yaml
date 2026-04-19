@@ -1,3 +1,64 @@
 spring:
   application:
     name: market-data-service
+
+  threads:
+    virtual:
+      enabled: true  # Java 21 virtual threads (Project Loom)
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/market_data
+    username: stockpulse
+    password: stockpulse_dev
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Flyway gère le schéma — JPA valide seulement
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+      acks: all  # attendre confirmation de tous les replicas
+      retries: 3
+
+server:
+  port: 8081
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# Configuration spécifique à l'application
+app:
+  alpha-vantage:
+    api-key: ${ALPHA_VANTAGE_API_KEY:demo}  # variable d'env, fallback "demo"
+    base-url: https://www.alphavantage.co
+  kafka:
+    topics:
+      stock-prices: stock.prices
+  scheduling:
+    stock-fetch-cron: "0 * * * * *"  # toutes les minutes
+  stocks:
+    symbols: AAPL,GOOGL,MSFT,AMZN,META,JPM,GS,BNP.PA

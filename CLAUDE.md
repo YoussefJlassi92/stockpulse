@@ -45,3 +45,13 @@ Kubernetes, ArgoCD GitOps, and Angular 21.
 - Do not modify files in `infra/` unless explicitly asked
 - Do not change Flyway migration files already committed
 - Do not add Maven/n
+
+## Git conventions
+- Use conventional commits: feat|fix|chore|refactor|test|docs(scope): message
+- Scope = service name: market-data-service, portfolio-service, alert-service, api-gateway, frontend, infra
+- Examples:
+    - feat(market-data-service): add Kafka producer for stock prices
+    - fix(portfolio-service): handle null price in P&L calculation
+    - chore(infra): update docker-compose Kafka listeners
+- Always commit per feature/layer — never one big commit for everything
+- Run tests before committing when possible
