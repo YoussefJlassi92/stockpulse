@@ -143,6 +143,29 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       JAVA_OPTS: "-Xms256m -Xmx512m -XX:+UseContainerSupport"
 
+  alert-service:
+    build:
+      context: .
+      dockerfile: services/alert-service/Dockerfile
+    container_name: stockpulse-alert
+    ports:
+      - "8083:8083"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres-alert:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-alert:5432/alerts
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_ENABLED: ${MAIL_ENABLED}
+      JAVA_OPTS: "-Xms256m -Xmx512m -XX:+UseContainerSupport"
+
 volumes:
   postgres_market_data:
   postgres_portfolio_data:
