@@ -17,7 +17,7 @@
         <module>services/market-data-service</module>
         <module>services/portfolio-service</module>
         <module>services/alert-service</module>
-        <!--<module>services/api-gateway</module>-->
+        <module>services/api-gateway</module>
     </modules>
 
     <properties>

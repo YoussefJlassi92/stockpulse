@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: market-data-service
+              uri: ${MARKET_DATA_SERVICE_URL:http://localhost:8081}
+              predicates:
+                - Path=/api/v1/stocks/**
+              filters:
+                - StripPrefix=0
+
+            - id: portfolio-service
+              uri: ${PORTFOLIO_SERVICE_URL:http://localhost:8082}
+              predicates:
+                - Path=/api/v1/portfolios/**
+              filters:
+                - StripPrefix=0
+
+            - id: alert-service
+              uri: ${ALERT_SERVICE_URL:http://localhost:8083}
+              predicates:
+                - Path=/api/v1/alerts/**
+              filters:
+                - StripPrefix=0
+
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOrigins:
+                  - "http://localhost:4200"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders: "*"
+                allowCredentials: true
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+  endpoint:
+    health:
+      show-details: always
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:stockpulse-dev-secret-key-minimum-256-bits-long}
+    expiration: 86400000

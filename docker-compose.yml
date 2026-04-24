@@ -166,6 +166,27 @@ services:
       MAIL_ENABLED: ${MAIL_ENABLED}
       JAVA_OPTS: "-Xms256m -Xmx512m -XX:+UseContainerSupport"
 
+  api-gateway:
+    build:
+      context: .
+      dockerfile: services/api-gateway/Dockerfile
+    container_name: stockpulse-api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      market-data-service:
+        condition: service_started
+      portfolio-service:
+        condition: service_started
+      alert-service:
+        condition: service_started
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-stockpulse-dev-secret-key-minimum-256-bits-long}
+      MARKET_DATA_SERVICE_URL: http://stockpulse-market-data:8081
+      PORTFOLIO_SERVICE_URL: http://stockpulse-portfolio:8082
+      ALERT_SERVICE_URL: http://stockpulse-alert:8083
+      JAVA_OPTS: "-Xms256m -Xmx512m -XX:+UseContainerSupport"
+
 volumes:
   postgres_market_data:
   postgres_portfolio_data:
