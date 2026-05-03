@@ -166,6 +166,20 @@ services:
       MAIL_ENABLED: ${MAIL_ENABLED}
       JAVA_OPTS: "-Xms256m -Xmx512m -XX:+UseContainerSupport"
 
+  analytics-service:
+    build:
+      context: .
+      dockerfile: services/analytics-service/Dockerfile
+    container_name: stockpulse-analytics
+    ports:
+      - "8084:8084"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      JAVA_OPTS: "-Xms256m -Xmx512m -XX:+UseContainerSupport"
+
   api-gateway:
     build:
       context: .

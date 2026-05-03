@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: analytics-service
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    streams:
+      application-id: analytics-service
+      default-key-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      default-value-serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      properties:
+        default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        default.value.serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        commit.interval.ms: 1000
+        num.stream.threads: 2
+
+server:
+  port: 8084
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+app:
+  kafka:
+    topics:
+      stock-prices: stock.prices
+      analytics-output: stock.prices.analytics
+      spike-alerts: stock.prices.spikes
+  streams:
+    window-size-minutes: 5
+    spike-threshold-percent: 3.0

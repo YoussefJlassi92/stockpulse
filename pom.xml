@@ -18,6 +18,7 @@
         <module>services/portfolio-service</module>
         <module>services/alert-service</module>
         <module>services/api-gateway</module>
+        <module>services/analytics-service</module>
     </modules>
 
     <properties>
