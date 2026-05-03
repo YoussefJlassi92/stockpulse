@@ -37,6 +37,9 @@ spring:
       properties:
         spring.json.trusted.packages: "com.stockpulse.*"
         spring.json.value.default.type: com.stockpulse.portfolio.domain.StockPriceEvent
+    listener:
+      ack-mode: manual
+      concurrency: 3
 
   websocket:
     allowed-origins: "http://localhost:4200"
