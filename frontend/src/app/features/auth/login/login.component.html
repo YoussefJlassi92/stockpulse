@@ -1,0 +1,57 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <div class="login-header">
+        <mat-icon class="logo-icon">trending_up</mat-icon>
+        <h1 class="app-title">StockPulse</h1>
+        <p class="app-subtitle">Real-time Portfolio Tracker</p>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (error()) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ error() }}</span>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>User ID</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput formControlName="userId" autocomplete="username" />
+          @if (form.get('userId')?.hasError('required') && form.get('userId')?.touched) {
+            <mat-error>User ID is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
+          <input matInput type="password" formControlName="password" autocomplete="current-password" />
+          @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+            <mat-error>Password is required</mat-error>
+          }
+          @if (form.get('password')?.hasError('minlength') && form.get('password')?.touched) {
+            <mat-error>Password must be at least 3 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          class="login-button"
+          [disabled]="loading()"
+        >
+          @if (loading()) {
+            <mat-spinner diameter="20" />
+          } @else {
+            Login
+          }
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
