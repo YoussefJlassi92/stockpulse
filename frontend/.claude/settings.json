@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\user\\\\Documents\\\\Travail\\\\workspace\\\\stockpulse\\\\frontend\\\\src\" -Recurse | Where-Object { $_.PSIsContainer -eq $false } | Select-Object FullName | Sort-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"c:\\\\Users\\\\user\\\\Documents\\\\Travail\\\\workspace\\\\stockpulse\\\\frontend\\\\src\\\\\", \"\"\\) })"
+    ]
+  }
+}
