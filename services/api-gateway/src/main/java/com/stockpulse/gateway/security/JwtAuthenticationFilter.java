@@ -19,7 +19,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
     private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
-    private static final List<String> EXCLUDED_PREFIXES = List.of("/api/v1/auth/", "/actuator/");
+    private static final List<String> EXCLUDED_PREFIXES = List.of("/api/v1/auth/", "/actuator/", "/ws");
 
     private final JwtUtil jwtUtil;
 

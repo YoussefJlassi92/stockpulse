@@ -6,6 +6,9 @@ spring:
     gateway:
       server:
         webflux:
+          httpclient:
+            websocket:
+              max-frame-payload-length: 65536
           routes:
             - id: market-data-service
               uri: ${MARKET_DATA_SERVICE_URL:http://localhost:8081}
@@ -27,6 +30,13 @@ spring:
                 - Path=/api/v1/alerts/**
               filters:
                 - StripPrefix=0
+
+            - id: portfolio-ws
+              uri: ${PORTFOLIO_WS_URL:ws://localhost:8082}
+              predicates:
+                - Path=/ws/**
+              metadata:
+                response-timeout: 0
 
           default-filters:
             - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
