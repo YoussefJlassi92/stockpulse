@@ -1,0 +1,81 @@
+.alerts-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.create-form-card {
+  margin-bottom: 24px;
+}
+
+.create-form {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.form-field {
+  flex: 1;
+  min-width: 160px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.alerts-card {
+  mat-card-content {
+    padding: 0;
+  }
+}
+
+.alerts-table {
+  width: 100%;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  &.active {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.inactive {
+    background: #ffebee;
+    color: #c62828;
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px;
+  color: rgba(0, 0, 0, 0.54);
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    display: block;
+    margin: 0 auto 16px;
+  }
+}
