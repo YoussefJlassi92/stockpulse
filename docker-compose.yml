@@ -198,6 +198,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-stockpulse-dev-secret-key-minimum-256-bits-long}
       MARKET_DATA_SERVICE_URL: http://stockpulse-market-data:8081
       PORTFOLIO_SERVICE_URL: http://stockpulse-portfolio:8082
+      PORTFOLIO_WS_URL: ws://stockpulse-portfolio:8082
       ALERT_SERVICE_URL: http://stockpulse-alert:8083
       JAVA_OPTS: "-Xms256m -Xmx512m -XX:+UseContainerSupport"
 
