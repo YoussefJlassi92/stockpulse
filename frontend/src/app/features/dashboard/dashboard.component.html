@@ -1,0 +1,104 @@
+@if (loading()) {
+  <div class="loading-container">
+    <mat-spinner diameter="48" />
+  </div>
+} @else if (error()) {
+  <div class="error-message">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ error() }}</span>
+  </div>
+} @else {
+  <div class="metrics-grid">
+    <mat-card class="metric-card">
+      <mat-card-content>
+        <div class="metric-label">
+          <mat-icon>account_balance</mat-icon>
+          Total Portfolio Value
+        </div>
+        <div class="metric-value">{{ totalValue() | currency }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card">
+      <mat-card-content>
+        <div class="metric-label">
+          <mat-icon>trending_up</mat-icon>
+          Total P&amp;L
+        </div>
+        <div class="metric-value" [ngClass]="totalPnL() >= 0 ? 'positive' : 'negative'">
+          {{ totalPnL() | currency }}
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card">
+      <mat-card-content>
+        <div class="metric-label">
+          <mat-icon>pie_chart</mat-icon>
+          Positions
+        </div>
+        <div class="metric-value">{{ positions().length }}</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="metric-card">
+      <mat-card-content>
+        <div class="metric-label">
+          <mat-icon>notifications_active</mat-icon>
+          Active Alerts
+        </div>
+        <div class="metric-value">{{ activeAlerts() }}</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  @if (positions().length > 0) {
+    <mat-card class="positions-card">
+      <mat-card-header>
+        <mat-card-title>Positions</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="positions()" class="positions-table">
+          <ng-container matColumnDef="symbol">
+            <th mat-header-cell *matHeaderCellDef>Symbol</th>
+            <td mat-cell *matCellDef="let row">{{ row.symbol }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="quantity">
+            <th mat-header-cell *matHeaderCellDef>Qty</th>
+            <td mat-cell *matCellDef="let row">{{ row.quantity }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="avgBuyPrice">
+            <th mat-header-cell *matHeaderCellDef>Avg Buy</th>
+            <td mat-cell *matCellDef="let row">{{ row.avgBuyPrice | currency }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="currentPrice">
+            <th mat-header-cell *matHeaderCellDef>Current</th>
+            <td mat-cell *matCellDef="let row">{{ row.currentPrice | currency }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="pnl">
+            <th mat-header-cell *matHeaderCellDef>P&amp;L</th>
+            <td mat-cell *matCellDef="let row"
+                [ngClass]="row.pnl >= 0 ? 'positive' : 'negative'">
+              {{ row.pnl | currency }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="pnlPercent">
+            <th mat-header-cell *matHeaderCellDef>P&amp;L %</th>
+            <td mat-cell *matCellDef="let row"
+                [ngClass]="row.pnlPercent >= 0 ? 'positive' : 'negative'">
+              {{ row.pnlPercent | number:'1.2-2' }}%
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  }
+}

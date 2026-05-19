@@ -1,0 +1,76 @@
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #c62828;
+  padding: 16px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metric-card {
+  mat-card-content {
+    padding: 16px;
+  }
+}
+
+.metric-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.metric-value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.positive {
+  color: #2e7d32;
+}
+
+.negative {
+  color: #c62828;
+}
+
+.positions-card {
+  mat-card-content {
+    padding: 0;
+  }
+}
+
+.positions-table {
+  width: 100%;
+}
