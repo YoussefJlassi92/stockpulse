@@ -1,6 +1,7 @@
 package com.stockpulse.portfolio.infrastructure.kafka;
 
 import com.stockpulse.portfolio.application.PortfolioService;
+import com.stockpulse.portfolio.application.PositionRepository;
 import com.stockpulse.portfolio.domain.StockPriceEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,17 +11,22 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import java.util.List;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StockPriceConsumerTest {
@@ -29,7 +35,13 @@ class StockPriceConsumerTest {
     private PortfolioService portfolioService;
 
     @Mock
+    private PositionRepository positionRepository;
+
+    @Mock
     private KafkaTemplate<String, StockPriceEvent> kafkaTemplate;
+
+    @Mock
+    private SimpMessagingTemplate messagingTemplate;
 
     @Mock
     private Acknowledgment ack;
@@ -41,7 +53,7 @@ class StockPriceConsumerTest {
 
     @BeforeEach
     void setUp() {
-        consumer = new StockPriceConsumer(portfolioService, kafkaTemplate, STOCK_PRICES_TOPIC);
+        consumer = new StockPriceConsumer(portfolioService, positionRepository, kafkaTemplate, messagingTemplate, STOCK_PRICES_TOPIC);
     }
 
     @Test
@@ -53,6 +65,7 @@ class StockPriceConsumerTest {
                 new BigDecimal("1.25"),
                 OffsetDateTime.now(),
                 "alpha-vantage");
+        when(positionRepository.findBySymbol(anyString())).thenReturn(List.of());
 
         consumer.consume(event, ack);
 

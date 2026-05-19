@@ -1,6 +1,7 @@
 package com.stockpulse.portfolio.infrastructure.kafka;
 
 import com.stockpulse.portfolio.application.PortfolioService;
+import com.stockpulse.portfolio.application.PositionRepository;
 import com.stockpulse.portfolio.domain.StockPriceEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,7 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 /**
  * Kafka consumer for {@code stock.prices} events using <b>manual offset acknowledgment</b>.
@@ -36,15 +40,21 @@ public class StockPriceConsumer {
     private static final Logger log = LoggerFactory.getLogger(StockPriceConsumer.class);
 
     private final PortfolioService portfolioService;
+    private final PositionRepository positionRepository;
     private final KafkaTemplate<String, StockPriceEvent> kafkaTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
     private final String dlqTopic;
 
     public StockPriceConsumer(
             PortfolioService portfolioService,
+            PositionRepository positionRepository,
             KafkaTemplate<String, StockPriceEvent> kafkaTemplate,
+            SimpMessagingTemplate messagingTemplate,
             @Value("${app.kafka.topics.stock-prices}") String stockPricesTopic) {
         this.portfolioService = portfolioService;
+        this.positionRepository = positionRepository;
         this.kafkaTemplate = kafkaTemplate;
+        this.messagingTemplate = messagingTemplate;
         this.dlqTopic = stockPricesTopic + ".DLQ";
     }
 
@@ -62,11 +72,22 @@ public class StockPriceConsumer {
         try {
             portfolioService.updatePositionPrice(event.symbol(), event.price());
             log.debug("Processed StockPriceEvent for symbol={} price={}", event.symbol(), event.price());
+            broadcastPositionUpdates(event.symbol());
             ack.acknowledge();
         } catch (Exception ex) {
             log.error("Failed to process StockPriceEvent for symbol={}: {}", event.symbol(), ex.getMessage(), ex);
             kafkaTemplate.send(dlqTopic, event.symbol(), event);
             ack.acknowledge();
         }
+    }
+
+    private void broadcastPositionUpdates(String symbol) {
+        positionRepository.findBySymbol(symbol).stream()
+                .collect(Collectors.groupingBy(position -> position.getPortfolioId()))
+                .forEach((portfolioId, positions) ->
+                        positions.forEach(position ->
+                                messagingTemplate.convertAndSend("/topic/portfolio/" + portfolioId, position)
+                        )
+                );
     }
 }
