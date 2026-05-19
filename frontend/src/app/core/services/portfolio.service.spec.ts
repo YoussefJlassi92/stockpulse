@@ -35,7 +35,7 @@ describe('PortfolioService', () => {
       expect(portfolios).toEqual(mockPortfolios);
     });
 
-    const req = httpMock.expectOne(`${PORTFOLIOS}/user1`);
+    const req = httpMock.expectOne(`${PORTFOLIOS}/user/user1`);
     expect(req.request.method).toBe('GET');
     req.flush(mockPortfolios);
   });

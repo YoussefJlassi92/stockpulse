@@ -9,7 +9,7 @@ export class PortfolioService {
   constructor(private http: HttpClient) {}
 
   getPortfolios(userId: string): Observable<Portfolio[]> {
-    return this.http.get<Portfolio[]>(`${PORTFOLIOS}/${userId}`);
+    return this.http.get<Portfolio[]>(`${PORTFOLIOS}/user/${userId}`);
   }
 
   getPositions(portfolioId: number): Observable<Position[]> {
@@ -21,6 +21,6 @@ export class PortfolioService {
   }
 
   createPortfolio(userId: string, name: string): Observable<Portfolio> {
-    return this.http.post<Portfolio>(`${PORTFOLIOS}/${userId}`, { name });
+    return this.http.post<Portfolio>(PORTFOLIOS, { userId, name });
   }
 }
