@@ -55,7 +55,18 @@
   @if (positions().length > 0) {
     <mat-card class="positions-card">
       <mat-card-header>
-        <mat-card-title>Positions</mat-card-title>
+        <mat-card-title>
+          Positions
+          @if (wsConnected()) {
+            <span class="live-badge">
+              <span class="live-dot"></span>
+              LIVE
+            </span>
+          }
+        </mat-card-title>
+        @if (wsConnected()) {
+          <mat-card-subtitle>Updated {{ lastUpdated() | date:'HH:mm:ss' }}</mat-card-subtitle>
+        }
       </mat-card-header>
       <mat-card-content>
         <table mat-table [dataSource]="positions()" class="positions-table">

@@ -1,10 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { signal } from '@angular/core';
+import { of, throwError, NEVER } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DashboardComponent } from './dashboard.component';
 import { PortfolioService } from '../../core/services/portfolio.service';
 import { AlertService } from '../../core/services/alert.service';
 import { AuthService } from '../../core/services/auth.service';
+import { WebsocketService } from '../../core/services/websocket.service';
 import { Portfolio, Position } from '../../core/models/portfolio.model';
 import { AlertRule } from '../../core/models/alert.model';
 
@@ -31,13 +33,21 @@ describe('DashboardComponent', () => {
     getPositions: vi.fn(),
   };
   const alertServiceMock = { getAlerts: vi.fn() };
-  const authServiceMock = { getUserId: vi.fn() };
+  const authServiceMock = { getUserId: vi.fn(), getToken: vi.fn() };
+  const wsServiceMock = {
+    connect: vi.fn(),
+    disconnect: vi.fn(),
+    subscribeToPortfolioUpdates: vi.fn(),
+    connected: signal(false),
+  };
 
   beforeEach(async () => {
     portfolioServiceMock.getPortfolios.mockReturnValue(of([mockPortfolio]));
     portfolioServiceMock.getPositions.mockReturnValue(of([mockPosition]));
     alertServiceMock.getAlerts.mockReturnValue(of([mockAlert]));
     authServiceMock.getUserId.mockReturnValue('user1');
+    authServiceMock.getToken.mockReturnValue('test-token');
+    wsServiceMock.subscribeToPortfolioUpdates.mockReturnValue(NEVER);
 
     await TestBed.configureTestingModule({
       imports: [DashboardComponent, NoopAnimationsModule],
@@ -45,6 +55,7 @@ describe('DashboardComponent', () => {
         { provide: PortfolioService, useValue: portfolioServiceMock },
         { provide: AlertService, useValue: alertServiceMock },
         { provide: AuthService, useValue: authServiceMock },
+        { provide: WebsocketService, useValue: wsServiceMock },
       ],
     }).compileComponents();
 
@@ -71,6 +82,14 @@ describe('DashboardComponent', () => {
     expect(component.loading()).toBe(false);
   });
 
+  it('should connect to WebSocket after loading', () => {
+    expect(wsServiceMock.connect).toHaveBeenCalledWith('test-token');
+  });
+
+  it('should subscribe to portfolio updates after loading', () => {
+    expect(wsServiceMock.subscribeToPortfolioUpdates).toHaveBeenCalledWith(1);
+  });
+
   it('should calculate totalValue correctly', () => {
     // quantity=10, currentPrice=200 → 2000
     expect(component.totalValue()).toBe(2000);
@@ -87,6 +106,10 @@ describe('DashboardComponent', () => {
       { ...mockAlert, id: 2, active: false },
     ]);
     expect(component.activeAlerts()).toBe(1);
+  });
+
+  it('should reflect wsConnected from service signal', () => {
+    expect(component.wsConnected()).toBe(false);
   });
 
   it('should set error signal on service failure', async () => {

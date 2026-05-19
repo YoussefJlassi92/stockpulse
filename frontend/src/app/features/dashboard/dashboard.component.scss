@@ -69,8 +69,38 @@
   mat-card-content {
     padding: 0;
   }
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+  }
 }
 
 .positions-table {
   width: 100%;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #2e7d32;
+  letter-spacing: 1px;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4caf50;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%   { opacity: 1; transform: scale(1); }
+  50%  { opacity: 0.5; transform: scale(0.75); }
+  100% { opacity: 1; transform: scale(1); }
 }
