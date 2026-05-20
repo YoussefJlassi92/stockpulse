@@ -17,3 +17,10 @@ export const loginFailure = createAction(
 );
 
 export const logout = createAction('[Auth] Logout');
+
+export const initAuth = createAction('[Auth] Init');
+
+export const initAuthSuccess = createAction(
+  '[Auth] Init Success',
+  props<{ response: LoginResponse }>()
+);

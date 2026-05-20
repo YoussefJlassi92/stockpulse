@@ -1,5 +1,5 @@
 import { authReducer, initialState } from './auth.reducer';
-import { login, loginSuccess, loginFailure, logout } from './auth.actions';
+import { login, loginSuccess, loginFailure, logout, initAuthSuccess } from './auth.actions';
 import { LoginRequest, LoginResponse } from '../../models/auth.model';
 
 describe('authReducer', () => {
@@ -40,6 +40,17 @@ describe('authReducer', () => {
     expect(state.loading).toBe(false);
     expect(state.error).toBe('Invalid credentials');
     expect(state.isAuthenticated).toBe(false);
+  });
+
+  it('should restore session on initAuthSuccess', () => {
+    const state = authReducer(
+      initialState,
+      initAuthSuccess({ response: { token: 'stored-token', userId: 'user1', expiresIn: 0 } })
+    );
+    expect(state.token).toBe('stored-token');
+    expect(state.userId).toBe('user1');
+    expect(state.isAuthenticated).toBe(true);
+    expect(state.loading).toBe(false);
   });
 
   it('should reset to initial state on logout', () => {
