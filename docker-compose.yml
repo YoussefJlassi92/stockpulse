@@ -202,6 +202,17 @@ services:
       ALERT_SERVICE_URL: http://stockpulse-alert:8083
       JAVA_OPTS: "-Xms256m -Xmx512m -XX:+UseContainerSupport"
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: stockpulse-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
+
 volumes:
   postgres_market_data:
   postgres_portfolio_data:
