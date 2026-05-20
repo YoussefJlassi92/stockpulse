@@ -22,7 +22,11 @@ public class CorsGlobalFilter implements WebFilter {
         ServerHttpResponse response = exchange.getResponse();
 
         HttpHeaders headers = response.getHeaders();
-        headers.add("Access-Control-Allow-Origin", "http://localhost:4200");
+        String origin = request.getHeaders().getFirst("Origin");
+        if (origin != null && (origin.equals("http://localhost:4200")
+                || origin.equals("http://localhost"))) {
+            headers.add("Access-Control-Allow-Origin", origin);
+        }
         headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
         headers.add("Access-Control-Allow-Headers", "*");
         headers.add("Access-Control-Allow-Credentials", "true");
