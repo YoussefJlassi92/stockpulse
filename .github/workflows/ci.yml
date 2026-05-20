@@ -74,8 +74,8 @@ jobs:
       - name: Install dependencies
         run: cd frontend && npm ci
 
-      - name: Run tests headless
-        run: cd frontend && npx ng test --watch=false --no-progress --browsers=ChromeHeadlessNoSandbox
+      - name: Run tests
+        run: cd frontend && npx vitest run
 
 # ─── Job 3: Build & push Docker images ───────────────────────────────────────
   build-docker:
