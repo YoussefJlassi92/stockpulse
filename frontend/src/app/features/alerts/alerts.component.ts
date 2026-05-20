@@ -1,4 +1,5 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CurrencyPipe, NgClass } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -14,6 +15,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AlertService } from '../../core/services/alert.service';
 import { AuthService } from '../../core/services/auth.service';
 import { AlertRule, AlertType, CreateAlertRequest } from '../../core/models/alert.model';
+import { ALERTS } from '../../core/services/api.config';
 
 @Component({
   selector: 'app-alerts',
@@ -35,14 +37,20 @@ import { AlertRule, AlertType, CreateAlertRequest } from '../../core/models/aler
   templateUrl: './alerts.component.html',
   styleUrl: './alerts.component.scss',
 })
-export class AlertsComponent implements OnInit {
+export class AlertsComponent {
   private readonly alertService = inject(AlertService);
   private readonly authService = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly fb = inject(FormBuilder);
 
-  readonly alerts = signal<AlertRule[]>([]);
-  readonly loading = signal(true);
+  private readonly userId = signal(this.authService.getUserId() ?? '');
+
+  readonly alertsResource = httpResource<AlertRule[]>(
+    () => this.userId() ? `${ALERTS}/${this.userId()}` : undefined
+  );
+
+  readonly alerts = computed(() => this.alertsResource.value() ?? []);
+  readonly loading = computed(() => this.alertsResource.isLoading());
   readonly showCreateForm = signal(false);
 
   readonly displayedColumns = ['symbol', 'alertType', 'thresholdPrice', 'email', 'status', 'actions'];
@@ -53,10 +61,6 @@ export class AlertsComponent implements OnInit {
     alertType: ['' as AlertType | '', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
   });
-
-  ngOnInit(): void {
-    this.loadAlerts();
-  }
 
   onCreateAlert(): void {
     if (this.createForm.invalid) {
@@ -80,7 +84,7 @@ export class AlertsComponent implements OnInit {
       next: () => {
         this.showCreateForm.set(false);
         this.createForm.reset();
-        this.loadAlerts();
+        this.alertsResource.reload();
         this.snackBar.open('Alert created successfully', 'Close', { duration: 3000 });
       },
       error: () => {
@@ -92,7 +96,7 @@ export class AlertsComponent implements OnInit {
   onDeleteAlert(alertId: number): void {
     this.alertService.deleteAlert(alertId).subscribe({
       next: () => {
-        this.loadAlerts();
+        this.alertsResource.reload();
         this.snackBar.open('Alert deleted', 'Close', { duration: 3000 });
       },
       error: () => {
@@ -103,19 +107,5 @@ export class AlertsComponent implements OnInit {
 
   getAlertStatusClass(alert: AlertRule): string {
     return alert.active ? 'active' : 'inactive';
-  }
-
-  private loadAlerts(): void {
-    const userId = this.authService.getUserId();
-    if (!userId) return;
-
-    this.loading.set(true);
-    this.alertService.getAlerts(userId).subscribe({
-      next: (alerts) => {
-        this.alerts.set(alerts);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
   }
 }

@@ -1,4 +1,5 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, effect, untracked } from '@angular/core';
+import { httpResource } from '@angular/common/http';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { CurrencyPipe, DecimalPipe, NgClass } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -12,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { PortfolioService } from '../../core/services/portfolio.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Portfolio, Position, AddPositionRequest } from '../../core/models/portfolio.model';
+import { PORTFOLIOS } from '../../core/services/api.config';
 
 @Component({
   selector: 'app-portfolio',
@@ -33,16 +35,31 @@ import { Portfolio, Position, AddPositionRequest } from '../../core/models/portf
   templateUrl: './portfolio.component.html',
   styleUrl: './portfolio.component.scss',
 })
-export class PortfolioComponent implements OnInit {
+export class PortfolioComponent {
   private readonly portfolioService = inject(PortfolioService);
   private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
 
-  readonly portfolios = signal<Portfolio[]>([]);
-  readonly positions = signal<Position[]>([]);
+  private readonly userId = signal(this.authService.getUserId() ?? '');
   readonly selectedPortfolioId = signal<number | null>(null);
-  readonly loading = signal(true);
   readonly showAddForm = signal(false);
+
+  readonly portfoliosResource = httpResource<Portfolio[]>(
+    () => this.userId() ? `${PORTFOLIOS}/user/${this.userId()}` : undefined
+  );
+
+  readonly positionsResource = httpResource<Position[]>(
+    () => {
+      const id = this.selectedPortfolioId();
+      return id ? `${PORTFOLIOS}/${id}/positions` : undefined;
+    }
+  );
+
+  readonly portfolios = computed(() => this.portfoliosResource.value() ?? []);
+  readonly positions = computed(() => this.positionsResource.value() ?? []);
+  readonly loading = computed(
+    () => this.portfoliosResource.isLoading() || this.positionsResource.isLoading()
+  );
 
   readonly totalValue = computed(() =>
     this.positions().reduce((sum, p) => sum + p.quantity * p.currentPrice, 0)
@@ -69,28 +86,19 @@ export class PortfolioComponent implements OnInit {
     price: [null as number | null, [Validators.required, Validators.min(0)]],
   });
 
-  ngOnInit(): void {
-    const userId = this.authService.getUserId();
-    if (!userId) return;
-
-    this.portfolioService.getPortfolios(userId).subscribe({
-      next: (portfolios) => {
-        this.portfolios.set(portfolios);
-        if (portfolios.length > 0) {
-          this.selectedPortfolioId.set(portfolios[0].id);
-          this.loadPositions(portfolios[0].id);
-        } else {
-          this.loading.set(false);
-        }
-      },
-      error: () => this.loading.set(false),
+  constructor() {
+    // Auto-select the first portfolio once it loads
+    effect(() => {
+      const portfolios = this.portfoliosResource.value();
+      if (portfolios?.length && this.selectedPortfolioId() === null) {
+        untracked(() => this.selectedPortfolioId.set(portfolios[0].id));
+      }
     });
   }
 
   onPortfolioChange(portfolioId: number): void {
     this.selectedPortfolioId.set(portfolioId);
     this.showAddForm.set(false);
-    this.loadPositions(portfolioId);
   }
 
   onAddPosition(): void {
@@ -111,7 +119,7 @@ export class PortfolioComponent implements OnInit {
       next: () => {
         this.showAddForm.set(false);
         this.addForm.reset();
-        this.loadPositions(portfolioId);
+        this.positionsResource.reload();
       },
     });
   }
@@ -122,16 +130,5 @@ export class PortfolioComponent implements OnInit {
 
   calculatePnLPercent(position: Position): number {
     return ((position.currentPrice - position.avgBuyPrice) / position.avgBuyPrice) * 100;
-  }
-
-  private loadPositions(portfolioId: number): void {
-    this.loading.set(true);
-    this.portfolioService.getPositions(portfolioId).subscribe({
-      next: (positions) => {
-        this.positions.set(positions);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
   }
 }
