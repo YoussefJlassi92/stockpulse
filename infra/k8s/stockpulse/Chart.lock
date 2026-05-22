@@ -1,0 +1,21 @@
+dependencies:
+- name: market-data-service
+  repository: file://../charts/market-data-service
+  version: 0.1.0
+- name: portfolio-service
+  repository: file://../charts/portfolio-service
+  version: 0.1.0
+- name: alert-service
+  repository: file://../charts/alert-service
+  version: 0.1.0
+- name: analytics-service
+  repository: file://../charts/analytics-service
+  version: 0.1.0
+- name: api-gateway
+  repository: file://../charts/api-gateway
+  version: 0.1.0
+- name: frontend
+  repository: file://../charts/frontend
+  version: 0.1.0
+digest: sha256:9f71bae61cfcc64ab9ab15a4eb7d5b8b31db8ae89c2498e893fe162ab6822d1f
+generated: "2026-05-22T16:31:13.1724377+02:00"

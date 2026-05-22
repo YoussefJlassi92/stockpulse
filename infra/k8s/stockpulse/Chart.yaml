@@ -1,0 +1,29 @@
+apiVersion: v2
+name: stockpulse
+version: 0.1.0
+description: StockPulse umbrella chart — deploys all services as a single release
+
+dependencies:
+  - name: market-data-service
+    version: 0.1.0
+    repository: file://../charts/market-data-service
+
+  - name: portfolio-service
+    version: 0.1.0
+    repository: file://../charts/portfolio-service
+
+  - name: alert-service
+    version: 0.1.0
+    repository: file://../charts/alert-service
+
+  - name: analytics-service
+    version: 0.1.0
+    repository: file://../charts/analytics-service
+
+  - name: api-gateway
+    version: 0.1.0
+    repository: file://../charts/api-gateway
+
+  - name: frontend
+    version: 0.1.0
+    repository: file://../charts/frontend

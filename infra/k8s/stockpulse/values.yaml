@@ -1,0 +1,62 @@
+# StockPulse umbrella chart — global value overrides
+#
+# Keys match the dependency names in Chart.yaml.
+# Any key here is deep-merged over the sub-chart's own values.yaml.
+#
+# Usage examples:
+#   # Pin all images to a specific SHA
+#   helm upgrade stockpulse ./infra/k8s/stockpulse \
+#     --set market-data-service.image.tag=abc1234 \
+#     --set portfolio-service.image.tag=abc1234
+#
+#   # Inject production secrets (never store real values here)
+#   helm upgrade stockpulse ./infra/k8s/stockpulse \
+#     --set market-data-service.secrets.SPRING_DATASOURCE_PASSWORD=prod_pass \
+#     --set market-data-service.secrets.ALPHA_VANTAGE_API_KEY=real_key
+
+# ── market-data-service ───────────────────────────────────────────────────────
+market-data-service:
+  replicaCount: 1
+  image:
+    tag: latest
+  # Override secrets with real values at deploy time — never commit them
+  secrets:
+    SPRING_DATASOURCE_PASSWORD: ""
+    ALPHA_VANTAGE_API_KEY: ""
+
+# ── portfolio-service ─────────────────────────────────────────────────────────
+portfolio-service:
+  replicaCount: 1
+  image:
+    tag: latest
+  secrets:
+    SPRING_DATASOURCE_PASSWORD: ""
+
+# ── alert-service ─────────────────────────────────────────────────────────────
+alert-service:
+  replicaCount: 1
+  image:
+    tag: latest
+  secrets:
+    SPRING_DATASOURCE_PASSWORD: ""
+    MAIL_PASSWORD: ""
+
+# ── analytics-service ─────────────────────────────────────────────────────────
+analytics-service:
+  replicaCount: 1
+  image:
+    tag: latest
+
+# ── api-gateway ───────────────────────────────────────────────────────────────
+api-gateway:
+  replicaCount: 1
+  image:
+    tag: latest
+  secrets:
+    JWT_SECRET: ""
+
+# ── frontend ──────────────────────────────────────────────────────────────────
+frontend:
+  replicaCount: 1
+  image:
+    tag: latest
