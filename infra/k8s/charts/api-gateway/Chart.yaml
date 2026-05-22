@@ -1,0 +1,4 @@
+apiVersion: v2
+name: api-gateway
+version: 0.1.0
+description: StockPulse API gateway — Spring Cloud Gateway, JWT auth, routing

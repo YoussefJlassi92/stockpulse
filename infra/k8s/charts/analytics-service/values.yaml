@@ -1,0 +1,27 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/youssefJlassi92/stockpulse/analytics-service
+  tag: latest
+  pullPolicy: Always
+
+service:
+  port: 8084
+
+probes:
+  path: /actuator/health
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# Non-sensitive environment variables — written to a ConfigMap
+env:
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+
+# No sensitive values for analytics-service
+secrets: {}

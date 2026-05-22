@@ -1,0 +1,4 @@
+apiVersion: v2
+name: analytics-service
+version: 0.1.0
+description: StockPulse analytics service — Kafka Streams tumbling windows and spike detection

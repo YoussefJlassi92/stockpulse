@@ -1,0 +1,4 @@
+apiVersion: v2
+name: portfolio-service
+version: 0.1.0
+description: StockPulse portfolio service — manages portfolios and calculates P&L

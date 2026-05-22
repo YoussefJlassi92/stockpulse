@@ -1,0 +1,4 @@
+apiVersion: v2
+name: alert-service
+version: 0.1.0
+description: StockPulse alert service — evaluates price alerts, sends email via AWS SES

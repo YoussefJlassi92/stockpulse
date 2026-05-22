@@ -1,0 +1,25 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/youssefJlassi92/stockpulse/frontend
+  tag: latest
+  pullPolicy: Always
+
+service:
+  port: 80
+
+# Frontend uses / for health checks — no Spring Actuator
+probes:
+  path: /
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+# No environment variables or secrets needed for the static Nginx frontend
+env: {}
+secrets: {}

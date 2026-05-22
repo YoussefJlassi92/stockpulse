@@ -1,0 +1,34 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/youssefJlassi92/stockpulse/alert-service
+  tag: latest
+  pullPolicy: Always
+
+service:
+  port: 8083
+
+probes:
+  path: /actuator/health
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# Non-sensitive environment variables — written to a ConfigMap
+env:
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-alert:5432/alerts
+  SPRING_DATASOURCE_USERNAME: stockpulse
+  MAIL_HOST: smtp.example.com
+  MAIL_USERNAME: alerts@stockpulse.io
+  MAIL_ENABLED: "false"
+
+# Sensitive values — written to a Secret (override via --set or Sealed Secrets in prod)
+secrets:
+  SPRING_DATASOURCE_PASSWORD: stockpulse_dev
+  MAIL_PASSWORD: changeme

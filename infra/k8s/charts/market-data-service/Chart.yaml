@@ -1,0 +1,4 @@
+apiVersion: v2
+name: market-data-service
+version: 0.1.0
+description: StockPulse market data service — polls Alpha Vantage, publishes to Kafka

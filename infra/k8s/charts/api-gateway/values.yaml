@@ -1,0 +1,32 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/youssefJlassi92/stockpulse/api-gateway
+  tag: latest
+  pullPolicy: Always
+
+service:
+  port: 8080
+
+probes:
+  path: /actuator/health
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# Non-sensitive environment variables — written to a ConfigMap
+# Service URLs assume release name "stockpulse" (stockpulse-<chart-name>)
+env:
+  MARKET_DATA_SERVICE_URL: http://stockpulse-market-data-service:8081
+  PORTFOLIO_SERVICE_URL: http://stockpulse-portfolio-service:8082
+  ALERT_SERVICE_URL: http://stockpulse-alert-service:8083
+  PORTFOLIO_WS_URL: ws://stockpulse-portfolio-service:8082
+
+# Sensitive values — written to a Secret (override via --set or Sealed Secrets in prod)
+secrets:
+  JWT_SECRET: stockpulse-dev-secret-key-minimum-256-bits-long
