@@ -13,8 +13,16 @@ CREATE TABLE stock_prices (
     CONSTRAINT pk_stock_prices PRIMARY KEY (id, fetched_at)
 );
 
--- Convertir en hypertable TimescaleDB (partitionnement automatique par temps)
-SELECT create_hypertable('stock_prices', 'fetched_at');
+-- Convertir en hypertable TimescaleDB si l'extension est disponible (optionnel en K8s standard)
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM pg_available_extensions WHERE name = 'timescaledb'
+    ) THEN
+        PERFORM create_extension_if_not_exists('timescaledb');
+        PERFORM create_hypertable('stock_prices', 'fetched_at');
+    END IF;
+END $$;
 
 -- Index pour les requêtes fréquentes
 CREATE INDEX idx_stock_prices_symbol ON stock_prices (symbol, fetched_at DESC);
