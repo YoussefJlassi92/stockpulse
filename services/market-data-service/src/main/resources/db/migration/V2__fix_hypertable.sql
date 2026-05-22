@@ -1,0 +1,3 @@
+-- V2__fix_hypertable.sql
+-- No-op migration: marks the TimescaleDB hypertable attempt as resolved.
+-- TimescaleDB optimisation is optional and not required for this project.
