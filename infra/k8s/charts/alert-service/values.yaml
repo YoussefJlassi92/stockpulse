@@ -11,6 +11,19 @@ service:
 probes:
   path: /actuator/health
 
+livenessProbe:
+  path: /actuator/health/liveness
+  initialDelaySeconds: 120
+  periodSeconds: 30
+  failureThreshold: 5
+  timeoutSeconds: 10
+
+readinessProbe:
+  initialDelaySeconds: 90
+  periodSeconds: 15
+  failureThreshold: 10
+  timeoutSeconds: 10
+
 resources:
   requests:
     cpu: 100m
