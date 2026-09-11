@@ -12,6 +12,7 @@ probes:
   path: /actuator/health
 
 livenessProbe:
+  path: /actuator/health/liveness
   initialDelaySeconds: 120
   periodSeconds: 30
   failureThreshold: 5
